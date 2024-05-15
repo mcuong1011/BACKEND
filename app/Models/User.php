@@ -21,7 +21,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'uuid'
+        'uuid',
+        'is_admin'
     ];
 
     /**
@@ -52,8 +53,18 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
+    public function tests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Test::class);
+    }
+
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function scopeAdmin($query)
+    {
+        return $query->where('is_admin', true);
     }
 }
