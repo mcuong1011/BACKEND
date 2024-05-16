@@ -1,10 +1,16 @@
 <?php
 
+use App\Actions\Questions\CreateQuestion;
+use App\Actions\Questions\UpdateQuestion;
+use App\Actions\Quizzes\CreateQuiz;
+use App\Actions\Quizzes\ShowQuiz;
+use App\Actions\Quizzes\ShowQuizzes;
+use App\Actions\Quizzes\UpdateQuiz;
+use App\Actions\Tests\RegisterTest;
+use App\Actions\Tests\ShowTestResult;
+use App\Actions\Tests\SubmitTest;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\QuizController;
-use App\Http\Controllers\TestController;
-use Illuminate\Http\Request;
+use App\Middlewares\IsAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -24,26 +30,26 @@ Route::middleware('api')->group(function () {
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::post('me', [AuthController::class, 'me']);
         // lay ra cac quiz-
-        Route::get('quizzes', [QuizController::class, 'index']);
+        Route::get('quizzes', ShowQuizzes::class);
         // Hien 1 quiz-
-        Route::get('quizzes/{id}', [QuizController::class, 'show']);
+        Route::get('quizzes/{id}', ShowQuiz::class);
         // lam 1 bai quiz-
-        Route::post('test', [TestController::class, 'store']);
+        Route::post('test', RegisterTest::class);
         // submit bai quiz-
-        Route::post('test/submit', [TestController::class, 'submitTest']);
+        Route::post('test/submit', SubmitTest::class);
         // lay ra lich su lam bai-
-        Route::get('test/results', [TestController::class, 'getMyResults']);
+        Route::get('test/results', ShowTestResult::class);
         // bang xep hang
-        Route::get('test/leaderboard/{id}', [TestController::class, 'leaderboard']);
+//        Route::get('test/leaderboard/{id}', [TestController::class, 'leaderboard']);
     })->middleware('auth:api');
-    Route::middleware("auth:api")->middleware(\App\Middlewares\IsAdmin::class)->group(function () {
+    Route::middleware("auth:api")->middleware(IsAdmin::class)->group(function () {
         // tao question-
-        Route::post('questions', [QuestionController::class, 'store']);
-        // sua question
-        Route::put('questions/{id}', [QuestionController::class, 'edit']);
+        Route::post('questions', CreateQuestion::class);
+        // sua question-
+        Route::put('questions/{id}', UpdateQuestion::class);
         //tao quiz moi-
-        Route::post('quizzes', [QuizController::class, 'store']);
+        Route::post('quizzes', CreateQuiz::class);
         // sua 1 quiz moi
-        Route::put('quizzes/{id}', [QuizController::class, 'edit']);
+        Route::put('quizzes/{id}', UpdateQuiz::class);
     });
 });
