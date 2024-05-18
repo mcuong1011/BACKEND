@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Exceptions\Handler;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,9 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app->singleton(
-            \Illuminate\Contracts\Debug\ExceptionHandler::class,
-            Handler::class
-        );
+        Blade::if('admin', function() {
+            return auth()->user()?->is_admin;
+        });
     }
 }

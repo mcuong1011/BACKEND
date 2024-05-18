@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Answer;
 use App\Models\Test;
+use App\Models\Answer;
+use Illuminate\Contracts\View\View;
 
-class ResultController extends APIController
+class ResultController extends Controller
 {
-    public function show($id)
+    public function show(Test $test): View
     {
-        $test = Test::find($id);
         $questions_count = $test->quiz->questions->count();
+
         $results = Answer::where('test_id', $test->id)
             ->with('question.options')
             ->get();
+
         if (!$test->quiz->public) {
             $leaderboard = Test::query()
                 ->where('quiz_id', $test->quiz_id)
@@ -24,17 +26,10 @@ class ResultController extends APIController
                 ->orderBy('result', 'desc')
                 ->orderBy('time_spent')
                 ->get();
-            return $this->responseSuccess([
-                "test" => $test,
-                "questions_count" => $questions_count,
-                "results" => $results,
-                "leaderboard" => $leaderboard
-            ]);
+
+            return view('front.quizzes.result', compact('test', 'questions_count', 'results', 'leaderboard'));
         }
-        return $this->responseSuccess([
-            "test" => $test,
-            "questions_count" => $questions_count,
-            "results" => $results
-        ]);
+
+        return view('front.quizzes.result', compact('test', 'questions_count', 'results'));
     }
 }

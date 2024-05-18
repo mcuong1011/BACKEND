@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Option;
+use App\Models\Question;
+use App\Models\Quiz;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,11 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->call(AdminSeeder::class);
+        Quiz::factory(20)->create()->each(function ($quiz) {
+            $question = Question::factory(10)->create()->each(function ($question) {
+                Option::factory(3)->create(['question_id' => $question->id]);
+            });
+            $quiz->questions()->attach($question);
+        });
     }
 }

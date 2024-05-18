@@ -28,13 +28,13 @@ class Test extends Model
         return $this->belongsTo(Quiz::class);
     }
 
-    public function answers()
-    {
-        return $this->hasMany(Answer::class);
-    }
-
     public function questions()
     {
         return $this->belongsToMany(Question::class, 'answers', 'test_id', 'question_id');
+    }
+
+    public function hasCorrectAnswer()
+    {
+        return $this->hasMany(Answer::class)->where('correct', true);
     }
 }

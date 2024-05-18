@@ -2,42 +2,29 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
-    public function render($request, Throwable $e)
+    /**
+     * The list of the inputs that are never flashed to the session on validation exceptions.
+     *
+     * @var array<int, string>
+     */
+    protected $dontFlash = [
+        'current_password',
+        'password',
+        'password_confirmation',
+    ];
+
+    /**
+     * Register the exception handling callbacks for the application.
+     */
+    public function register(): void
     {
-        if ($e instanceof ApiException) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'status' => $e->getStatusCode(),
-            ], $e->getStatusCode());
-        }
-        if ($e instanceof AuthenticationException) {
-            return response()->json([
-                'error' => 'Unauthenticated',
-                'status' => 401,
-            ], 401);
-        }
-        if ($e instanceof ModelNotFoundException) {
-            return response()->json([
-                'error' => 'Resource not found',
-                'status' => 404,
-            ], 404);
-        }
-        if ($e instanceof ValidationException) {
-            return response()->json([
-                'error' => $e->validator->errors()->getMessages(),
-                'status' => 400,
-            ], 400);
-        }
-        return parent::render($request, $e);
+        $this->reportable(function (Throwable $e) {
+            //
+        });
     }
-
-
 }
