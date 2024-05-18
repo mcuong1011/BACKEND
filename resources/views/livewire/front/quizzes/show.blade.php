@@ -5,19 +5,22 @@
             return `${this.minutesLeft.toString().padStart(2, '0')} phút ${this.secondsLeft.toString().padStart(2, '0')} giây`;
         }
     }"
-     x-init="setInterval(() => {
-        if (secondsLeft > 1) {
-            secondsLeft--;
-        } else {
-            if (minutesLeft > 1) {
-                minutesLeft--;
-                secondsLeft = 60;
+     x-init="() => {
+        setInterval(() => {
+            if (secondsLeft > 0) {
+                secondsLeft--;
+            } else {
+                if (minutesLeft > 0) {
+                    minutesLeft--;
+                    secondsLeft = 59;
+                }
             }
-            if(secondsLeft <= 0){
-             $wire.submit();
+            if(minutesLeft == 0 && secondsLeft == 0){
+                console.log('submit');
+                $wire.submit();
             }
-        }
-    }, 1000);" class="w-full flex h-fit" id="quiz-content">
+        }, 1000);
+    }" class="w-full flex h-fit justify-between" id="quiz-content">
     <div class="max-w-7xl">
         <div class="divide-y">
             @foreach($questions as $question)
@@ -43,12 +46,11 @@
                         @endforeach
                     </div>
                 </div>
-
             @endforeach
         </div>
     </div>
 
-    <div class="w-[60%] h-screen" id="sidebar-question">
+    <div class="w-fit h-screen" id="sidebar-question">
         <div class="sticky top-2 ml-2">
             <div class="mb-2 mt-3">
                 Thời gian làm bài còn lại: <span x-text="timeDisplay()" class="font-bold"></span>.
@@ -67,7 +69,7 @@
                 Bạn không thể nộp bài nếu chưa trả lời hết các câu hỏi.
             </p>
             <button
-                {{count($answersOfQuestions) < $questions->count() ? 'disabled' : ''}}
+                {{count(array_filter($answersOfQuestions)) < $questions->count() ? 'disabled' : ''}}
                 class="block border p-2 rounded-lg bg-green-400 my-2 text-white" wire:click="submit()">
                 Nộp bài
             </button>
