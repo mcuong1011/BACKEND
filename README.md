@@ -41,7 +41,7 @@ test.
 1- Clone the project
 
 ```
-git clone https://github.com/duwscan/quiz-system.git
+git clone **https://github.com/duwscan/quiz-system.git**
 ```
 
 2- Install the dependencies
